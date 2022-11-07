@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+          integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<input type="text" id="username">
+<input type="text" id="password">
+<button onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
+<button onclick="loadUsers(localStorage.getItem('token'))">loadUser</button>
+<script>
+    function loadUsers(token){
+        $.ajax({
+            type: "GET",
+            headers: {
+                Authorization: 'Bearer '+ token
+            },
+            url: "http://localhost:8000/users",
+            success: function (response) {
+                console.log(response)
+            }
+        })
+    }
+
+    function login(){
+        let name = document.getElementById('username').value;
+        let pass = document.getElementById('password').value;
+        let user = {
+            username: name,
+            password: pass,
+        }
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            type: 'POST',
+            url: "http://localhost:8000/login",
+            data: JSON.stringify(user),
+            success: function (response) {
+                localStorage.setItem("token", response.accessToken);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        })
+    }
+
+    function logout(){
+        localStorage.clear();
+    }
+</script>
+</body>
+</html>
